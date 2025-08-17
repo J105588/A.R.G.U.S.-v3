@@ -1,0 +1,59 @@
+# ===================================================================
+# Python & Virtual Environments
+# ===================================================================
+# Python仮想環境フォルダ
+venv/
+/venv/
+
+# Pythonキャッシュファイル
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pythonログファイル
+*.log
+
+
+# ===================================================================
+# A.R.G.U.S. Project Specific Files
+# ===================================================================
+# データベースファイル (個人情報を含む可能性があるため)
+*.db
+argus.db
+
+# 状態保存ファイル (ユーザーごとの設定)
+/config/state.json
+
+
+# ===================================================================
+# OS & Editor Specific
+# ===================================================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Visual Studio Code
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains (PyCharm, etc.)
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+
+# ===================================================================
+# Build & Distribution
+# ===================================================================
+/dist/
+/build/
+*.egg-info/
