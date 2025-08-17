@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.R.G.U.S. Control Panel</title>
+    <style>
+        /* --- 基本設定 --- */
+        body {
+            font-family: 'Segoe UI', Meiryo, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #252526;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        h1, h2, h3 {
+            color: #4fc1ff;
+            border-bottom: 2px solid #4fc1ff;
+            padding-bottom: 10px;
+        }
+
+        /* --- ナビゲーションタブ --- */
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid #444;
+            margin-bottom: 20px;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            color: #ccc;
+            font-size: 16px;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .tab-button:hover {
+            background-color: #333;
+        }
+        .tab-button.active {
+            color: #fff;
+            border-bottom: 3px solid #4fc1ff;
+        }
+
+        /* --- タブコンテンツ --- */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* --- コンポーネント & フォーム --- */
+        .card {
+            background-color: #2c2c2c;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 110px);
+            padding: 8px;
+            margin-right: 10px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background-color: #3c3c3c;
+            color: #ddd;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #0e639c;
+            color: white;
+            transition: background-color 0.2s ease;
+        }
+        .btn:hover {
+            background-color: #1177bb;
+        }
+        .btn-danger {
+            background-color: #9c2a0e;
+        }
+        .btn-danger:hover {
+            background-color: #bb3d11;
+        }
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        /* --- ルールリスト --- */
+        .rules-list {
+            list-style: none;
+            padding: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .rule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+        }
+        .rule-item:last-child {
+            border-bottom: none;
+        }
+        .rule-item.empty, .rule-item.error {
+            justify-content: center;
+            color: #888;
+        }
+        
+        /* --- 通信監視テーブル --- */
+        .traffic-table-wrapper {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        .traffic-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        .traffic-table th, .traffic-table td {
+            padding: 10px;
+            border: 1px solid #444;
+            text-align: left;
+            word-wrap: break-word;
+        }
+        .traffic-table th {
+            background-color: #3c3c3c;
+            position: sticky;
+            top: 0;
+        }
+        .traffic-table tr:nth-child(even) {
+            background-color: #2c2c2c;
+        }
+        .url-cell {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .traffic-table .blocked { color: #ff8a80; }
+        .traffic-table .allowed { color: #b9f6ca; }
+        .traffic-table .empty, .traffic-table .error { text-align: center; color: #888; padding: 20px; }
+
+        /* --- スイッチ --- */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input { display:none; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #4fc1ff;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* --- 詳細表示用モーダル --- */
+        .modal {
+            display: none; /* 初期状態では非表示 */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            padding-top: 50px;
+        }
+        .modal-content {
+            background-color: #2c2c2c;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 700px;
+            border-radius: 8px;
+            color: #e0e0e0;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #detail-content {
+            background-color: #1a1a1a;
+            border: 1px solid #444;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap; /* 長い行を折り返す */
+            word-wrap: break-word;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>A.R.G.U.S. Control Panel</h1>
+        
+        <div class="nav-tabs">
+            <button class="tab-button active" onclick="showTab('dashboard')">ダッシュボード</button>
+            <button class="tab-button" onclick="showTab('traffic')">通信監視</button>
+            <button class="tab-button" onclick="showTab('rules')">ルール管理</button>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- ダッシュボードタブ -->
+        <!-- ================================================================== -->
+        <div id="dashboard" class="tab-content active">
+            <h2>ようこそ</h2>
+            <div class="card">
+                <h3>クイックスタート</h3>
+                <p>A.R.G.U.S.へようこそ。以下の手順で監視を開始してください。</p>
+                <ol>
+                    <li>監視したいデバイス（スマートフォンなど）を、このPCと同じWi-Fiネットワークに接続します。</li>
+                    <li>デバイスのWi-Fi設定を開き、HTTPプロキシを手動に設定します。</li>
+                    <li>サーバーに <strong>192.168.0.215</strong> 、ポートに <strong>8080</strong> を入力します。</li>
+                    <li>デバイスのブラウザ（Safari/Chrome）で <strong>http://mitm.it</strong> を開き、証明書をダウンロードしてインストール・信頼設定を行います。</li>
+                </ol>
+                <button class="btn" onclick="downloadCertificate()">mitm.it を開く</button>
+            </div>
+            <div class="card">
+                <h3>ステータス</h3>
+                <p>Web UIサーバー: <span style="color: #b9f6ca;">●</span> 稼働中 (localhost:5000)</p>
+                <p>プロキシサーバー: <span style="color: #b9f6ca;">●</span> 稼働中 (192.168.0.215:8080)</p>
+            </div>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- 通信監視タブ -->
+        <!-- ================================================================== -->
+        <div id="traffic" class="tab-content">
+            <h2>リアルタイム通信監視</h2>
+            <button class="btn" onclick="refreshTrafficLogs()" style="margin-bottom: 15px;">更新</button>
+            <div class="traffic-table-wrapper">
+                <table class="traffic-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">時刻</th>
+                            <th style="width: 15%;">送信元IP</th>
+                            <th style="width: 8%;">メソッド</th>
+                            <th>URL</th>
+                            <th style="width: 10%;">ステータス</th>
+                            <th style="width: 8%;">ブロック</th>
+                            <th style="width: 10%;">アクション</th>
+                        </tr>
+                    </thead>
+                    <tbody id="traffic-tbody">
+                        <!-- ログはJavaScriptで動的に挿入されます -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- ルール管理タブ -->
+        <!-- ================================================================== -->
+        <div id="rules" class="tab-content">
+            <h2>フィルタリングルール管理</h2>
+            <div class="card">
+                <h3>マスターコントロール</h3>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span>すべてのフィルタリングを有効にする</span>
+                    <label class="switch">
+                        <input type="checkbox" id="filtering-toggle" onchange="toggleFiltering()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="card">
+                <h3>ブロックするドメイン</h3>
+                <p>ここに追加されたドメイン（およびそのサブドメイン）へのアクセスはブロックされます。</p>
+                <div class="add-rule">
+                    <input type="text" id="new-domain" placeholder="例: example.com">
+                    <button class="btn" onclick="addDomain()">ドメイン追加</button>
+                </div>
+                <ul id="domains-list" class="rules-list">
+                    <!-- ドメインはJavaScriptで動的に挿入されます -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- ================================================================== -->
+        <!-- 詳細表示用モーダルウィンドウ -->
+        <!-- ================================================================== -->
+        <div id="detail-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeDetailModal()">&times;</span>
+                <h2>通信詳細</h2>
+                <div id="detail-content">
+                    <!-- ここにJavaScriptで詳細情報が挿入される -->
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- .container の閉じタグ -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
