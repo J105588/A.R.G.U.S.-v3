@@ -101,7 +101,11 @@ pip install flask-socketio
 
 ### 1. A.R.G.U.S. の起動
 
-`(venv)`(仮想環境)が起動していることを確認し`.\final-start.bat`を実行 
+`(venv)`(仮想環境)が起動していることを確認し
+````cmd
+.\final-start.bat
+````
+を実行 
 
 ### 2. プロキシの設定
 
