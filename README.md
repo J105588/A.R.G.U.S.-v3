@@ -57,7 +57,7 @@ C:/dev/A.R.G.U.S.-v3/
 
 -   **OS**: Windows 10 / 11
 -   **Python**: Version 3.8 以上
-    -   インストール時に**「Add Python to PATH」**オプションを必ず有効にしてください。
+    -   インストール時に **「Add Python to PATH」** オプションを必ず有効にしてください。
 
 ---
 
